@@ -1,28 +1,26 @@
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-// import { request, gql, GraphQLClient } from 'graphql-request'
 import React from 'react';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
+import { useLoginMutation } from '../generated/graphql';
+import { graphQLClient } from '../client';
 
-const API_ENDPOINT = "https://qg37bb3opc.execute-api.eu-central-1.amazonaws.com/test/graphql"
 const BLOCKULA_ID = 'ckrg9j2e804820wjnj18irrfn'
 
 export default function App() {
   const [events, setEvents] = useState([])
   const [loggedIn, setLoggedIn] = useState(false)
-  const router = useRouter()
-  // const graphQLClient = new GraphQLClient(API_ENDPOINT)
+  const { mutateAsync: login } = useLoginMutation(graphQLClient)
 
-  const login = async () => {
-    void router.push('/communities')
-    // const data = await graphQLClient.request(mutation, {
-    //   identifier: 'superadmin',
-    //   password: 'backdoor'
-    // })
-    // console.log(data.login.token)
-    // graphQLClient.setHeader("Authorization", data.login.token)
-    // setLoggedIn(true)
+  const onLogin = async () => {
+    const data = await login({
+      identifier: 'superadmin',
+      password: 'backdoor'
+    })
+    console.log(data.login.token)
+    graphQLClient.setHeader("Authorization", data.login.token)
+    setLoggedIn(true)
   }
 
   const getCommunity = async () => {
@@ -36,11 +34,12 @@ export default function App() {
   
   return (
     <View style={styles.container}>
-      <Button title={'Login'} onPress={() => void login()} />
+      <Button title={'Login'} onPress={() => void onLogin()} />
       {loggedIn && <Button title={'Get data'} onPress={() => void getCommunity()} />}
       {loggedIn && events.map((event) => (
         <Text key={event.id}>{event.name}</Text>
       ))}
+      <Link href="/communities">Go to Details</Link>
     </View>
   )
 }
