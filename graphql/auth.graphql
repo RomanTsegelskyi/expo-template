@@ -1,0 +1,36 @@
+mutation Login(
+  $identifier: String
+  $password: String
+) {
+  login(
+    identifier: $identifier
+    password: $password
+  ) {
+    errors {
+      ... on TranslatableError {
+        errorCode
+        path
+      }
+    }
+    token
+    user {
+      ...userInfoWithCommunities
+    }
+  }
+}
+
+fragment userInfoWithCommunities on User {
+  ...userInfo
+  communitiesWhereMember {
+    ...communityInfo
+  }
+}
+
+fragment userInfo on User {
+  username
+}
+
+fragment communityInfo on Community {
+  name
+  code
+}

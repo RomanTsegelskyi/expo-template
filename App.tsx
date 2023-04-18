@@ -1,56 +1,83 @@
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { request, gql, GraphQLClient } from 'graphql-request'
+import React from 'react';
+
+const API_ENDPOINT = "https://qg37bb3opc.execute-api.eu-central-1.amazonaws.com/test/graphql"
+const BLOCKULA_ID = 'ckrg9j2e804820wjnj18irrfn'
+
+const query = gql`
+  query CommunityAdmin($communityId: String!) {
+    community(where: { id: $communityId }) {
+      events(orderBy: {
+        end: desc
+      }) {
+        id
+        name
+        start
+        end
+        mediaUrl
+        iconUrl
+      }
+      members {
+        id
+        firstName
+        lastName
+        username
+      }
+    }
+  }
+`
+
+const mutation = gql`
+  mutation Login(
+    $identifier: String
+    $password: String
+  ) {
+    login(
+      identifier: $identifier
+      password: $password
+    ) {
+      token
+      user {
+        username
+      }
+    }
+  }
+`
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [events, setEvents] = useState([])
+  const [loggedIn, setLoggedIn] = useState(false)
+  const graphQLClient = new GraphQLClient(API_ENDPOINT)
 
-  useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    };
-
-    getBarCodeScannerPermissions();
-  }, []);
-
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+  const login = async () => {
+    const data = await graphQLClient.request(mutation, {
+      identifier: 'superadmin',
+      password: 'backdoor'
+    })
+    console.log(data.login.token)
+    graphQLClient.setHeader("Authorization", data.login.token)
+    setLoggedIn(true)
   }
 
-  if (open) {
-    return (
-      <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={{
-            width: 200, 
-            height: 200,
-          }}
-        ><View style={{
-            width: 150,
-            height: 150,
-            borderWidth: 2,
-            borderColor: 'red',
-        }}>
-          </View></BarCodeScanner>
-        {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
-      </View>
-    );
-  } 
+  const getCommunity = async () => {
+    const data = await graphQLClient.request(query, {
+      communityId: BLOCKULA_ID
+    })
+    setEvents(data.community.events)
+  }
+
+
+  
   return (
     <View style={styles.container}>
-      <Button title={'Open Scanner'} onPress={() => setOpen(true)} />
+      <Button title={'Login'} onPress={() => void login()} />
+      {loggedIn && <Button title={'Get data'} onPress={() => void getCommunity()} />}
+      {loggedIn && events.map((event) => (
+        <Text key={event.id}>{event.name}</Text>
+      ))}
     </View>
   )
 }
