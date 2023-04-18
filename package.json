@@ -8,7 +8,7 @@
     "expo-router": "^1.5.3",
     "expo-status-bar": "~1.4.4",
     "graphql": "^16.6.0",
-    "graphql-request": "5.2.0",
+    "graphql-request": "^6.0.0",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -30,11 +30,15 @@
     "typescript": "^4.6.3"
   },
   "scripts": {
-    "start": "expo start --clear",
+    "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "codegen": "graphql-codegen codegen.yml"
+  },
+  "resolutions": {
+    "metro": "0.76.0",
+    "metro-resolver": "0.76.0"
   },
   "version": "1.0.0",
   "private": true,
