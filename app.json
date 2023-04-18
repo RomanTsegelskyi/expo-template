@@ -1,5 +1,9 @@
 {
   "expo": {
+    "scheme": "werz-admin",
+    "web": {
+      "bundler": "metro"
+    },
     "plugins": [
       [
         "expo-barcode-scanner",
