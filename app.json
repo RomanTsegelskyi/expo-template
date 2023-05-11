@@ -1,24 +1,11 @@
 {
   "expo": {
-    "scheme": "werz-admin",
+    "scheme": "tinytinkle",
     "web": {
       "bundler": "metro"
     },
-    "plugins": [
-      [
-        "expo-barcode-scanner",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
-        }
-      ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "43a33182-928d-4b3f-ac79-e0f2461b6777"
-      }
-    },
     "ios": {
-      "bundleIdentifier": "com.roman.tseg.werzmobileadmin"
+      "bundleIdentifier": "com.tinytinkle.mobile"
     }
   }
 }
