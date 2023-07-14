@@ -6,6 +6,9 @@
     },
     "ios": {
       "bundleIdentifier": "com.tinytinkle.mobile"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }

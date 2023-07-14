@@ -1,4 +1,4 @@
-# Opinionated Eexpo template
+# Opinionated Expo template
 
 <p>
   <!-- iOS -->
